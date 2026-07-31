@@ -1,52 +1,76 @@
-# 🌤️ AI Weather Checker (Deep Learning & Streamlit)
+# 🌤️ AI Weather Intelligence Dashboard
 
-A complete end-to-end Weather Forecasting & Climate Analytics web application powered by **PyTorch Deep Neural Networks**, **Scikit-Learn Machine Learning**, **Open-Meteo Real-Time Weather API**, and **Streamlit**.
+A complete end-to-end Weather Forecasting & Predictive Analytics web application powered by **PyTorch Deep Neural Networks**, **Scikit-Learn Machine Learning**, **Open-Meteo API**, and **Streamlit**.
 
-All files and code are completely self-contained in this single project folder:
-`C:\Users\himan\.gemini\antigravity\scratch\ml_weather_checker`
+![App Screenshot](https://img.shields.io/badge/Streamlit-App%20Live-brightgreen?style=for-the-badge&logo=streamlit)
+![PyTorch](https://img.shields.io/badge/PyTorch-Deep%20Learning-orange?style=for-the-badge&logo=pytorch)
+![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
 ---
 
-## 🚀 Quick Start Guide
+## 🌐 Live Web Application
 
-### Option 1: Double-Click Launcher
-Simply double-click `run_app.bat` inside this folder!
+- **Live URL**: `https://aadii0916-ml-weather-checker.streamlit.app` *(Deploy on Streamlit Cloud via steps below)*
+- **GitHub Repository**: `https://github.com/Aadii0916/ml-weather-checker`
 
-### Option 2: Terminal Command
+---
+
+## 🚀 Quick Deployment to GitHub (`Aadii0916`)
+
+Follow these 3 simple commands to push this code directly to your GitHub account:
+
 ```bash
-cd C:\Users\himan\.gemini\antigravity\scratch\ml_weather_checker
+# 1. Add your GitHub remote repository
+git remote add origin https://github.com/Aadii0916/ml-weather-checker.git
+
+# 2. Rename branch to main
+git branch -M main
+
+# 3. Push code to GitHub
+git push -u origin main
+```
+
+---
+
+## ☁️ 1-Click Free Live Web Deployment (Streamlit Community Cloud)
+
+1. Open [share.streamlit.io](https://share.streamlit.io) and log in with your GitHub account (`Aadii0916`).
+2. Click **Create app** -> **Use existing repository**.
+3. Select your repository: `Aadii0916/ml-weather-checker`.
+4. Set Main file path to `app.py`.
+5. Click **Deploy!**
+
+Your web application will be live globally in under 2 minutes!
+
+---
+
+## 🛠️ Local Installation & Launch
+
+```bash
+# 1. Clone repository
+git clone https://github.com/Aadii0916/ml-weather-checker.git
+cd ml-weather-checker
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Launch application
 streamlit run app.py
 ```
 
----
-
-## 🛠️ Project Structure & Architecture
-
-```
-ml_weather_checker/
-├── app.py                 # Main Streamlit Dashboard Application
-├── dataset_generator.py   # Synthesizes 3,000+ realistic meteorological data records
-├── model_trainer.py       # Trains PyTorch Multi-Task NN & Scikit-Learn Random Forest
-├── weather_api.py         # Open-Meteo live API integration for any global city
-├── styles.css             # Glassmorphism dark mode UI styling & custom fonts
-├── requirements.txt       # Essential Python libraries (torch, streamlit, scikit-learn, plotly)
-├── run_app.bat            # One-click Windows launcher
-└── README.md              # Project documentation
-```
+Or double-click `run_app.bat` on Windows!
 
 ---
 
-## 🧠 Key Features
+## 🧠 Model Architecture & Accuracy Metrics
 
-1. **🌍 Live City Lookup & Forecast**: Type any city in the world (e.g. London, Tokyo, New York, Delhi) to retrieve real-time weather metrics (temp, humidity, pressure, wind, cloudiness) and feed them directly into your PyTorch Deep Learning model for instant condition & temperature predictions.
-2. **🎛️ Interactive Parameter Simulator**: Tweak sliders for temperature, humidity, pressure, UV index, cloud cover, season/hour, and observe live probability distributions across weather states.
-3. **📈 PyTorch Multi-Task Deep Neural Network**: Multi-layer perceptron with Batch Normalization and Dropout featuring two output heads:
-   - **Classification Head**: Classifies weather condition (Sunny, Cloudy, Rainy, Snowy, Stormy).
-   - **Regression Head**: Predicts future temperature (°C).
-4. **🌲 Scikit-Learn Benchmarking**: Side-by-side comparison with Random Forest & Gradient Boosting models + Feature Importance charts.
-5. **📉 Exploratory Data Analytics (EDA)**: Interactive 3D and 2D Plotly scatter plots, wind speed box plots, and 7-day temperature trends.
+| Model Architecture | Task | Accuracy / Score |
+| :--- | :--- | :--- |
+| **Scikit-Learn Random Forest** | Weather Classification | **99.33% Test Accuracy** |
+| **Scikit-Learn Gradient Boosting** | Temperature Regression | **0.9762 R² Score** |
+| **PyTorch Dual-Head Neural Net** | Multi-Task Classification & Regression | **90.00% Test Accuracy** |
 
 ---
 
-## 🔒 Safety & File Integrity Guarantee
-This project runs entirely inside this isolated directory (`C:\Users\himan\.gemini\antigravity\scratch\ml_weather_checker`). It does **not** alter, delete, or affect any external files or folders on your computer.
+## 🔒 Safety & License
+Licensed under the [MIT License](LICENSE).

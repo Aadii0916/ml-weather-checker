@@ -1,0 +1,353 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap');
+
+/* Global Reset & Base Typography */
+html, body, [class*="css"] {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    color: #f1f5f9;
+}
+
+/* Atmospheric Interactive Animated Background */
+.stApp {
+    background: #070914 !important;
+    position: relative;
+}
+
+/* Ensure Streamlit Content Container is ALWAYS Visible on top */
+.main .block-container {
+    position: relative !important;
+    z-index: 10 !important;
+    max-width: 1200px;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}
+
+/* Background Sun / Atmospheric Glow */
+.stApp::before {
+    content: '';
+    position: fixed;
+    top: -100px;
+    right: -100px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, rgba(147, 51, 234, 0.12) 45%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: -5 !important;
+    animation: atmosphericPulse 8s infinite alternate ease-in-out;
+}
+
+@keyframes atmosphericPulse {
+    0% { transform: scale(1) translate(0, 0); opacity: 0.7; }
+    100% { transform: scale(1.15) translate(-30px, 30px); opacity: 0.9; }
+}
+
+/* Interactive Floating Clouds Background Layer - Strictly Behind Content */
+.cloud-bg-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: -10 !important;
+    overflow: hidden;
+}
+
+/* Individual Animated Clouds */
+.cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(8px);
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.5s ease-out;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: inherit;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Cloud 1 */
+.cloud-1 {
+    width: 240px;
+    height: 75px;
+    top: 15%;
+    left: -10%;
+    animation: driftCloud1 35s infinite linear;
+}
+.cloud-1::before { width: 95px; height: 95px; top: -40px; left: 35px; }
+.cloud-1::after { width: 75px; height: 75px; top: -25px; left: 110px; }
+
+/* Cloud 2 */
+.cloud-2 {
+    width: 320px;
+    height: 95px;
+    top: 42%;
+    left: -20%;
+    animation: driftCloud2 45s infinite linear;
+    animation-delay: 5s;
+    opacity: 0.7;
+}
+.cloud-2::before { width: 130px; height: 130px; top: -60px; left: 50px; }
+.cloud-2::after { width: 100px; height: 100px; top: -38px; left: 150px; }
+
+/* Cloud 3 */
+.cloud-3 {
+    width: 200px;
+    height: 65px;
+    top: 75%;
+    left: -15%;
+    animation: driftCloud3 30s infinite linear;
+    animation-delay: 12s;
+    opacity: 0.6;
+}
+.cloud-3::before { width: 80px; height: 80px; top: -35px; left: 30px; }
+.cloud-3::after { width: 65px; height: 65px; top: -22px; left: 90px; }
+
+/* Cloud Animations */
+@keyframes driftCloud1 {
+    0% { transform: translateX(-200px) translateY(0); }
+    50% { transform: translateX(55vw) translateY(20px); }
+    100% { transform: translateX(110vw) translateY(0); }
+}
+
+@keyframes driftCloud2 {
+    0% { transform: translateX(-350px) translateY(0); }
+    50% { transform: translateX(60vw) translateY(-25px); }
+    100% { transform: translateX(115vw) translateY(0); }
+}
+
+@keyframes driftCloud3 {
+    0% { transform: translateX(-200px) translateY(0); }
+    50% { transform: translateX(50vw) translateY(15px); }
+    100% { transform: translateX(110vw) translateY(0); }
+}
+
+/* Hide Default Streamlit Chrome clutter */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+
+/* Hero Container */
+.hero-container {
+    text-align: center;
+    padding: 35px 20px 25px 20px;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    margin-bottom: 30px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.hero-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #38bdf8, #a855f7, transparent);
+}
+
+.hero-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 3.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #38bdf8 0%, #818cf8 40%, #c084fc 80%, #f472b6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+}
+
+.hero-subtitle {
+    color: #cbd5e1;
+    font-size: 1.15rem;
+    font-weight: 400;
+    max-width: 680px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Premium Glassmorphism Cards */
+.glass-card {
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 10;
+}
+
+.glass-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 30px rgba(56, 189, 248, 0.2);
+}
+
+/* Stat Tiles */
+.stat-tile {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 18px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stat-tile:hover {
+    background: rgba(30, 41, 59, 0.85);
+    border-color: rgba(56, 189, 248, 0.35);
+    transform: translateY(-3px);
+}
+
+.stat-icon {
+    font-size: 2rem;
+    margin-bottom: 6px;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-top: 4px;
+}
+
+/* Prediction Highlight Card */
+.ai-prediction-card {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9));
+    border-radius: 18px;
+    padding: 22px;
+    border-left: 5px solid #38bdf8;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    margin-top: 15px;
+}
+
+.ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badge-pytorch {
+    background: rgba(238, 77, 42, 0.2);
+    color: #ff6b4a;
+    border: 1px solid rgba(238, 77, 42, 0.4);
+}
+
+.badge-ml {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+.pred-condition {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 8px 0 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pred-temp {
+    font-size: 1.25rem;
+    color: #38bdf8;
+    font-weight: 600;
+}
+
+/* Custom Input Box */
+.stTextInput > div > div > input {
+    background: rgba(15, 23, 42, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 14px !important;
+    color: #f8fafc !important;
+    padding: 12px 18px !important;
+    font-size: 1rem !important;
+    transition: all 0.25s ease !important;
+}
+
+.stTextInput > div > div > input:focus {
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.3) !important;
+}
+
+/* Custom Button */
+.stButton > button {
+    background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 14px !important;
+    padding: 12px 24px !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+    box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4) !important;
+    transition: all 0.25s ease !important;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(2, 132, 199, 0.6) !important;
+}
+
+/* Streamlit Tabs Styling */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 10px;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(10px);
+    padding: 8px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stTabs [data-baseweb="tab"] {
+    border-radius: 12px;
+    color: #cbd5e1;
+    font-weight: 600;
+    padding: 10px 22px;
+    border: none !important;
+    transition: all 0.2s ease;
+}
+
+.stTabs [aria-selected="true"] {
+    background: linear-gradient(135deg, #38bdf8, #6366f1) !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.35) !important;
+}
+
+/* Sidebar Custom Styling */
+section[data-testid="stSidebar"] {
+    background-color: rgba(7, 9, 19, 0.95);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}

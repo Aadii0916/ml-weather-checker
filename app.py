@@ -38,51 +38,55 @@ DATA_DIR = os.path.join(BASE_DIR, 'data')
 
 @st.cache_resource
 def load_all_artifacts():
-    scaler_path = os.path.join(MODELS_DIR, 'scaler.joblib')
-    if not os.path.exists(scaler_path):
-        train_and_save_models()
-        
-    scaler = joblib.load(os.path.join(MODELS_DIR, 'scaler.joblib'))
-    label_encoder = joblib.load(os.path.join(MODELS_DIR, 'label_encoder.joblib'))
-    rf_clf = joblib.load(os.path.join(MODELS_DIR, 'rf_classifier.joblib'))
-    gb_reg = joblib.load(os.path.join(MODELS_DIR, 'gb_regressor.joblib'))
-    history = joblib.load(os.path.join(MODELS_DIR, 'dl_history.joblib'))
-    
+    # Ensure required artifact files exist before attempting to load them.
+    required_files = {
+        'scaler': os.path.join(MODELS_DIR, 'scaler.joblib'),
+        'label_encoder': os.path.join(MODELS_DIR, 'label_encoder.joblib'),
+        'rf_classifier': os.path.join(MODELS_DIR, 'rf_classifier.joblib'),
+        'gb_regressor': os.path.join(MODELS_DIR, 'gb_regressor.joblib'),
+        'dl_history': os.path.join(MODELS_DIR, 'dl_history.joblib'),
+        'pytorch_model': os.path.join(MODELS_DIR, 'pytorch_weather_net.pth')
+    }
+
+    missing = [name for name, path in required_files.items() if not os.path.exists(path)]
+    if missing:
+        raise FileNotFoundError(
+            "Missing model artifacts: {}.\nPlease run 'python model_trainer.py' or provide the files in the models/ folder before starting the app.".format(
+                ", ".join(missing)
+            )
+        )
+
+    scaler = joblib.load(required_files['scaler'])
+    label_encoder = joblib.load(required_files['label_encoder'])
+    rf_clf = joblib.load(required_files['rf_classifier'])
+    gb_reg = joblib.load(required_files['gb_regressor'])
+    history = joblib.load(required_files['dl_history'])
+
     num_classes = len(label_encoder.classes_)
     nn_model = PyTorchWeatherNN(input_dim=8, num_classes=num_classes)
-    pth_path = os.path.join(MODELS_DIR, 'pytorch_weather_net.pth')
-    # Load checkpoint robustly and map tensors to CPU (safer across environments)
-    if os.path.exists(pth_path):
-        try:
-            ckpt = torch.load(pth_path, map_location='cpu')
-            # Support checkpoints that wrap the state dict (common pattern)
-            if isinstance(ckpt, dict) and 'state_dict' in ckpt:
-                state_dict = ckpt['state_dict']
-            else:
-                state_dict = ckpt
-            nn_model.load_state_dict(state_dict)
-        except Exception as e:
-            # If loading fails, raise an informative error so Streamlit shows it
-            raise RuntimeError(f"Failed to load PyTorch model from {pth_path}: {e}")
-    else:
-        # If no saved model found, attempt to (re)train — train_and_save_models will create the artifacts
-        train_and_save_models()
+    pth_path = required_files['pytorch_model']
+
+    try:
         ckpt = torch.load(pth_path, map_location='cpu')
         if isinstance(ckpt, dict) and 'state_dict' in ckpt:
             state_dict = ckpt['state_dict']
         else:
             state_dict = ckpt
         nn_model.load_state_dict(state_dict)
+    except Exception as e:
+        raise RuntimeError(f"Failed to load PyTorch model from {pth_path}: {e}")
 
     nn_model.eval()
 
     return scaler, label_encoder, rf_clf, gb_reg, nn_model, history
 
-try:
-    scaler, label_encoder, rf_clf, gb_reg, nn_model, dl_history = load_all_artifacts()
-except Exception as e:
-    st.error(f"Error initializing prediction models: {e}")
-    st.stop()
+# Show a spinner while loading artifacts so the user sees progress
+with st.spinner("Loading AI models and artifacts. This may take a few seconds..."):
+    try:
+        scaler, label_encoder, rf_clf, gb_reg, nn_model, dl_history = load_all_artifacts()
+    except Exception as e:
+        st.error(f"Error initializing prediction models: {e}")
+        st.stop()
 
 CONDITION_EMOJIS = {
     'Sunny': '☀️',

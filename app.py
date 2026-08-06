@@ -26,14 +26,8 @@ if os.path.exists(css_file):
     with open(css_file) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# Inject Interactive Floating Animated Clouds Layer
-st.markdown("""
-    <div class="cloud-bg-layer">
-        <div class="cloud cloud-1"></div>
-        <div class="cloud cloud-2"></div>
-        <div class="cloud cloud-3"></div>
-    </div>
-""", unsafe_allow_html=True)
+# Decorative cloud background removed to ensure UI is visible on all browsers
+# (Removed per user request to avoid UI being obscured by animated layers)
 
 # -----------------------------------------------------------------------------
 # 2. Resource Caching & Model Loading
@@ -57,9 +51,31 @@ def load_all_artifacts():
     num_classes = len(label_encoder.classes_)
     nn_model = PyTorchWeatherNN(input_dim=8, num_classes=num_classes)
     pth_path = os.path.join(MODELS_DIR, 'pytorch_weather_net.pth')
-    nn_model.load_state_dict(torch.load(pth_path, weights_only=True))
+    # Load checkpoint robustly and map tensors to CPU (safer across environments)
+    if os.path.exists(pth_path):
+        try:
+            ckpt = torch.load(pth_path, map_location='cpu')
+            # Support checkpoints that wrap the state dict (common pattern)
+            if isinstance(ckpt, dict) and 'state_dict' in ckpt:
+                state_dict = ckpt['state_dict']
+            else:
+                state_dict = ckpt
+            nn_model.load_state_dict(state_dict)
+        except Exception as e:
+            # If loading fails, raise an informative error so Streamlit shows it
+            raise RuntimeError(f"Failed to load PyTorch model from {pth_path}: {e}")
+    else:
+        # If no saved model found, attempt to (re)train — train_and_save_models will create the artifacts
+        train_and_save_models()
+        ckpt = torch.load(pth_path, map_location='cpu')
+        if isinstance(ckpt, dict) and 'state_dict' in ckpt:
+            state_dict = ckpt['state_dict']
+        else:
+            state_dict = ckpt
+        nn_model.load_state_dict(state_dict)
+
     nn_model.eval()
-    
+
     return scaler, label_encoder, rf_clf, gb_reg, nn_model, history
 
 try:
@@ -117,7 +133,8 @@ with tab_live:
     
     col_input, col_btn = st.columns([4, 1])
     with col_input:
-        city_name = st.text_input("", value="London", placeholder="Enter any city... (e.g. New York, Tokyo, Paris, Delhi, Sydney)")
+        # Provide a non-empty label to avoid Streamlit accessibility warnings; hide it visually
+        city_name = st.text_input("City (hidden)", value="London", placeholder="Enter any city... (e.g. New York, Tokyo, Paris, Delhi, Sydney)", label_visibility='hidden')
     with col_btn:
         st.write("")
         btn_search = st.button("🔍 Get Forecast", use_container_width=True)

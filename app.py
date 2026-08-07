@@ -36,7 +36,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 2. Resource Caching & Model Loading
+# 2. Resource Caching & Model Loading (with Auto Environment Compatibility)
 # -----------------------------------------------------------------------------
 BASE_DIR = os.path.dirname(__file__)
 MODELS_DIR = os.path.join(BASE_DIR, 'models')
@@ -48,11 +48,21 @@ def load_all_artifacts():
     if not os.path.exists(scaler_path):
         train_and_save_models()
         
-    scaler = joblib.load(os.path.join(MODELS_DIR, 'scaler.joblib'))
-    label_encoder = joblib.load(os.path.join(MODELS_DIR, 'label_encoder.joblib'))
-    rf_clf = joblib.load(os.path.join(MODELS_DIR, 'rf_classifier.joblib'))
-    gb_reg = joblib.load(os.path.join(MODELS_DIR, 'gb_regressor.joblib'))
-    history = joblib.load(os.path.join(MODELS_DIR, 'dl_history.joblib'))
+    try:
+        scaler = joblib.load(os.path.join(MODELS_DIR, 'scaler.joblib'))
+        label_encoder = joblib.load(os.path.join(MODELS_DIR, 'label_encoder.joblib'))
+        rf_clf = joblib.load(os.path.join(MODELS_DIR, 'rf_classifier.joblib'))
+        gb_reg = joblib.load(os.path.join(MODELS_DIR, 'gb_regressor.joblib'))
+        history = joblib.load(os.path.join(MODELS_DIR, 'dl_history.joblib'))
+    except Exception as err:
+        # If joblib fails due to scikit-learn version mismatch across environments
+        print(f"Joblib load notice ({err}). Retraining models for local environment compatibility...")
+        train_and_save_models()
+        scaler = joblib.load(os.path.join(MODELS_DIR, 'scaler.joblib'))
+        label_encoder = joblib.load(os.path.join(MODELS_DIR, 'label_encoder.joblib'))
+        rf_clf = joblib.load(os.path.join(MODELS_DIR, 'rf_classifier.joblib'))
+        gb_reg = joblib.load(os.path.join(MODELS_DIR, 'gb_regressor.joblib'))
+        history = joblib.load(os.path.join(MODELS_DIR, 'dl_history.joblib'))
     
     num_classes = len(label_encoder.classes_)
     nn_model = PyTorchWeatherNN(input_dim=8, num_classes=num_classes)
@@ -65,8 +75,10 @@ def load_all_artifacts():
 try:
     scaler, label_encoder, rf_clf, gb_reg, nn_model, dl_history = load_all_artifacts()
 except Exception as e:
-    st.error(f"Error initializing prediction models: {e}")
-    st.stop()
+    # Final fallback: train fresh models on startup
+    print(f"Fallback training models: {e}")
+    train_and_save_models()
+    scaler, label_encoder, rf_clf, gb_reg, nn_model, dl_history = load_all_artifacts()
 
 CONDITION_EMOJIS = {
     'Sunny': '☀️',

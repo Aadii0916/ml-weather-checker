@@ -11,7 +11,7 @@ from weather_api import geocode_city, fetch_live_weather
 from model_trainer import train_and_save_models, PyTorchWeatherNN
 
 # -----------------------------------------------------------------------------
-# 1. Page Config & Google Search Console Verification Meta Tags
+# 1. Page Config & Google Search Console Verification Meta Tag
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="AI Weather Intelligence | Real-Time Global Forecast & Deep Learning",
@@ -20,12 +20,8 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Google Search Console Verification Meta Tag Injections
-st.markdown("""
-    <meta name="google-site-verification" content="googleeb7948709320c598.html" />
-    <meta name="google-site-verification" content="googleeb7948709320c598" />
-    <div id="google-verification" style="display:none;">google-site-verification: googleeb7948709320c598.html</div>
-""", unsafe_allow_html=True)
+# Exact Google Search Console Verification Meta Tag
+st.markdown('<meta name="google-site-verification" content="VMDdq-Hx6-kDW6egSC7GSBWtp-3kpKUSyBvskPDvHIQ" />', unsafe_allow_html=True)
 
 # Inject Custom Styling
 css_file = os.path.join(os.path.dirname(__file__), 'styles.css')

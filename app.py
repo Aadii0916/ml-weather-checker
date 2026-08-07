@@ -55,7 +55,6 @@ def load_all_artifacts():
         gb_reg = joblib.load(os.path.join(MODELS_DIR, 'gb_regressor.joblib'))
         history = joblib.load(os.path.join(MODELS_DIR, 'dl_history.joblib'))
     except Exception as err:
-        # If joblib fails due to scikit-learn version mismatch across environments
         print(f"Joblib load notice ({err}). Retraining models for local environment compatibility...")
         train_and_save_models()
         scaler = joblib.load(os.path.join(MODELS_DIR, 'scaler.joblib'))
@@ -75,7 +74,6 @@ def load_all_artifacts():
 try:
     scaler, label_encoder, rf_clf, gb_reg, nn_model, dl_history = load_all_artifacts()
 except Exception as e:
-    # Final fallback: train fresh models on startup
     print(f"Fallback training models: {e}")
     train_and_save_models()
     scaler, label_encoder, rf_clf, gb_reg, nn_model, dl_history = load_all_artifacts()
@@ -89,7 +87,7 @@ CONDITION_EMOJIS = {
 }
 
 # -----------------------------------------------------------------------------
-# 3. Hero Header
+# 3. Hero Header & Clean Sidebar
 # -----------------------------------------------------------------------------
 st.markdown("""
     <div class="hero-container">
@@ -98,13 +96,11 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-st.sidebar.image("https://img.icons8.com/isometric/100/weather.png", width=75)
-st.sidebar.title("AI Weather Console")
+st.sidebar.markdown("## 🌤️ Weather Console")
 st.sidebar.markdown("---")
 st.sidebar.markdown("### ⚙️ Quick Controls")
 unit_temp = st.sidebar.radio("Temperature Unit:", ["Celsius (°C)", "Fahrenheit (°F)"])
 st.sidebar.markdown("---")
-st.sidebar.caption("⚡ Powered by PyTorch & Streamlit")
 
 # -----------------------------------------------------------------------------
 # 4. Main Tabs Navigation

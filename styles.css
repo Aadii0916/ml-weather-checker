@@ -3,37 +3,29 @@
 /* Global Reset & Base Typography */
 html, body, [class*="css"] {
     font-family: 'Plus Jakarta Sans', sans-serif !important;
-    color: #f1f5f9;
+    color: #f1f5f9 !important;
 }
 
-/* Atmospheric Interactive Animated Background */
-.stApp {
+/* Streamlit App View Container Background */
+[data-testid="stAppViewContainer"], .stApp {
     background: #070914 !important;
     position: relative;
+    overflow-x: hidden;
 }
 
-/* Ensure Streamlit Content Container is ALWAYS Visible on top */
-.main .block-container {
-    position: relative !important;
-    z-index: 10 !important;
-    max-width: 1200px;
-    padding-top: 2rem;
-    padding-bottom: 3rem;
-}
-
-/* Background Sun / Atmospheric Glow */
-.stApp::before {
+/* Atmospheric Ambient Lighting Glow */
+[data-testid="stAppViewContainer"]::before {
     content: '';
     position: fixed;
-    top: -100px;
-    right: -100px;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, rgba(147, 51, 234, 0.12) 45%, transparent 70%);
+    top: -120px;
+    right: -120px;
+    width: 650px;
+    height: 650px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, rgba(147, 51, 234, 0.15) 45%, transparent 70%);
     border-radius: 50%;
-    filter: blur(60px);
+    filter: blur(70px);
     pointer-events: none;
-    z-index: -5 !important;
+    z-index: 0;
     animation: atmosphericPulse 8s infinite alternate ease-in-out;
 }
 
@@ -42,18 +34,111 @@ html, body, [class*="css"] {
     100% { transform: scale(1.15) translate(-30px, 30px); opacity: 0.9; }
 }
 
-/* Cloud background removed per user request */
-/* Previously defined floating cloud visuals have been deleted to ensure Streamlit UI is fully visible. */
+/* Streamlit Main Block Container - Guaranteed Top Visibility */
+[data-testid="stMainBlockContainer"], .block-container, .main .block-container {
+    position: relative !important;
+    z-index: 2 !important;
+    max-width: 1200px !important;
+    padding-top: 2rem !important;
+    padding-bottom: 3rem !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Floating Clouds Animation inside Background Container */
+.cloud-bg-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.cloud-shape {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.cloud-shape::before, .cloud-shape::after {
+    content: '';
+    position: absolute;
+    background: inherit;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Cloud 1 */
+.cloud-shape-1 {
+    width: 250px;
+    height: 80px;
+    top: 12%;
+    left: -10%;
+    animation: driftCloud1 38s infinite linear;
+}
+.cloud-shape-1::before { width: 100px; height: 100px; top: -45px; left: 35px; }
+.cloud-shape-1::after { width: 80px; height: 80px; top: -28px; left: 115px; }
+
+/* Cloud 2 */
+.cloud-shape-2 {
+    width: 340px;
+    height: 100px;
+    top: 45%;
+    left: -20%;
+    animation: driftCloud2 48s infinite linear;
+    animation-delay: 4s;
+    opacity: 0.75;
+}
+.cloud-shape-2::before { width: 135px; height: 135px; top: -62px; left: 55px; }
+.cloud-shape-2::after { width: 105px; height: 105px; top: -40px; left: 160px; }
+
+/* Cloud 3 */
+.cloud-shape-3 {
+    width: 220px;
+    height: 70px;
+    top: 78%;
+    left: -15%;
+    animation: driftCloud3 32s infinite linear;
+    animation-delay: 10s;
+    opacity: 0.65;
+}
+.cloud-shape-3::before { width: 85px; height: 85px; top: -38px; left: 32px; }
+.cloud-shape-3::after { width: 70px; height: 70px; top: -25px; left: 95px; }
+
+/* Cloud Animations */
+@keyframes driftCloud1 {
+    0% { transform: translateX(-220px) translateY(0); }
+    50% { transform: translateX(55vw) translateY(20px); }
+    100% { transform: translateX(110vw) translateY(0); }
+}
+
+@keyframes driftCloud2 {
+    0% { transform: translateX(-360px) translateY(0); }
+    50% { transform: translateX(60vw) translateY(-25px); }
+    100% { transform: translateX(115vw) translateY(0); }
+}
+
+@keyframes driftCloud3 {
+    0% { transform: translateX(-220px) translateY(0); }
+    50% { transform: translateX(50vw) translateY(15px); }
+    100% { transform: translateX(110vw) translateY(0); }
+}
 
 /* Hide Default Streamlit Chrome clutter */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
+#MainMenu, header[data-testid="stHeader"] {visibility: hidden !important;}
+footer {visibility: hidden !important;}
 
 /* Hero Container */
 .hero-container {
     text-align: center;
     padding: 35px 20px 25px 20px;
-    background: rgba(15, 23, 42, 0.75);
+    background: rgba(15, 23, 42, 0.85) !important;
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     border-radius: 24px;
@@ -62,7 +147,7 @@ footer {visibility: hidden;}
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     position: relative;
     overflow: hidden;
-    z-index: 10;
+    z-index: 5 !important;
 }
 
 .hero-container::before {
@@ -98,7 +183,7 @@ footer {visibility: hidden;}
 
 /* Premium Glassmorphism Cards */
 .glass-card {
-    background: rgba(15, 23, 42, 0.75);
+    background: rgba(15, 23, 42, 0.85) !important;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -108,7 +193,7 @@ footer {visibility: hidden;}
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    z-index: 10;
+    z-index: 5 !important;
 }
 
 .glass-card:hover {
@@ -119,7 +204,7 @@ footer {visibility: hidden;}
 
 /* Stat Tiles */
 .stat-tile {
-    background: rgba(30, 41, 59, 0.6);
+    background: rgba(30, 41, 59, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     padding: 18px;
@@ -128,7 +213,7 @@ footer {visibility: hidden;}
 }
 
 .stat-tile:hover {
-    background: rgba(30, 41, 59, 0.85);
+    background: rgba(30, 41, 59, 0.9);
     border-color: rgba(56, 189, 248, 0.35);
     transform: translateY(-3px);
 }
@@ -155,7 +240,7 @@ footer {visibility: hidden;}
 
 /* Prediction Highlight Card */
 .ai-prediction-card {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9));
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.92));
     border-radius: 18px;
     padding: 22px;
     border-left: 5px solid #38bdf8;
@@ -205,7 +290,7 @@ footer {visibility: hidden;}
 
 /* Custom Input Box */
 .stTextInput > div > div > input {
-    background: rgba(15, 23, 42, 0.8) !important;
+    background: rgba(15, 23, 42, 0.85) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
     border-radius: 14px !important;
     color: #f8fafc !important;
@@ -240,11 +325,11 @@ footer {visibility: hidden;}
 /* Streamlit Tabs Styling */
 .stTabs [data-baseweb="tab-list"] {
     gap: 10px;
-    background: rgba(15, 23, 42, 0.7);
+    background: rgba(15, 23, 42, 0.8);
     backdrop-filter: blur(10px);
     padding: 8px;
     border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .stTabs [data-baseweb="tab"] {
@@ -264,6 +349,6 @@ footer {visibility: hidden;}
 
 /* Sidebar Custom Styling */
 section[data-testid="stSidebar"] {
-    background-color: rgba(7, 9, 19, 0.95);
+    background-color: rgba(7, 9, 19, 0.95) !important;
     border-right: 1px solid rgba(255, 255, 255, 0.08);
 }

@@ -26,8 +26,14 @@ if os.path.exists(css_file):
     with open(css_file) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# Decorative cloud background removed to ensure UI is visible on all browsers
-# (Removed per user request to avoid UI being obscured by animated layers)
+# Inject Background Cloud Layer
+st.markdown("""
+    <div class="cloud-bg-container">
+        <div class="cloud-shape cloud-shape-1"></div>
+        <div class="cloud-shape cloud-shape-2"></div>
+        <div class="cloud-shape cloud-shape-3"></div>
+    </div>
+""", unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # 2. Resource Caching & Model Loading
@@ -38,55 +44,29 @@ DATA_DIR = os.path.join(BASE_DIR, 'data')
 
 @st.cache_resource
 def load_all_artifacts():
-    # Ensure required artifact files exist before attempting to load them.
-    required_files = {
-        'scaler': os.path.join(MODELS_DIR, 'scaler.joblib'),
-        'label_encoder': os.path.join(MODELS_DIR, 'label_encoder.joblib'),
-        'rf_classifier': os.path.join(MODELS_DIR, 'rf_classifier.joblib'),
-        'gb_regressor': os.path.join(MODELS_DIR, 'gb_regressor.joblib'),
-        'dl_history': os.path.join(MODELS_DIR, 'dl_history.joblib'),
-        'pytorch_model': os.path.join(MODELS_DIR, 'pytorch_weather_net.pth')
-    }
-
-    missing = [name for name, path in required_files.items() if not os.path.exists(path)]
-    if missing:
-        raise FileNotFoundError(
-            "Missing model artifacts: {}.\nPlease run 'python model_trainer.py' or provide the files in the models/ folder before starting the app.".format(
-                ", ".join(missing)
-            )
-        )
-
-    scaler = joblib.load(required_files['scaler'])
-    label_encoder = joblib.load(required_files['label_encoder'])
-    rf_clf = joblib.load(required_files['rf_classifier'])
-    gb_reg = joblib.load(required_files['gb_regressor'])
-    history = joblib.load(required_files['dl_history'])
-
+    scaler_path = os.path.join(MODELS_DIR, 'scaler.joblib')
+    if not os.path.exists(scaler_path):
+        train_and_save_models()
+        
+    scaler = joblib.load(os.path.join(MODELS_DIR, 'scaler.joblib'))
+    label_encoder = joblib.load(os.path.join(MODELS_DIR, 'label_encoder.joblib'))
+    rf_clf = joblib.load(os.path.join(MODELS_DIR, 'rf_classifier.joblib'))
+    gb_reg = joblib.load(os.path.join(MODELS_DIR, 'gb_regressor.joblib'))
+    history = joblib.load(os.path.join(MODELS_DIR, 'dl_history.joblib'))
+    
     num_classes = len(label_encoder.classes_)
     nn_model = PyTorchWeatherNN(input_dim=8, num_classes=num_classes)
-    pth_path = required_files['pytorch_model']
-
-    try:
-        ckpt = torch.load(pth_path, map_location='cpu')
-        if isinstance(ckpt, dict) and 'state_dict' in ckpt:
-            state_dict = ckpt['state_dict']
-        else:
-            state_dict = ckpt
-        nn_model.load_state_dict(state_dict)
-    except Exception as e:
-        raise RuntimeError(f"Failed to load PyTorch model from {pth_path}: {e}")
-
+    pth_path = os.path.join(MODELS_DIR, 'pytorch_weather_net.pth')
+    nn_model.load_state_dict(torch.load(pth_path, weights_only=True))
     nn_model.eval()
-
+    
     return scaler, label_encoder, rf_clf, gb_reg, nn_model, history
 
-# Show a spinner while loading artifacts so the user sees progress
-with st.spinner("Loading AI models and artifacts. This may take a few seconds..."):
-    try:
-        scaler, label_encoder, rf_clf, gb_reg, nn_model, dl_history = load_all_artifacts()
-    except Exception as e:
-        st.error(f"Error initializing prediction models: {e}")
-        st.stop()
+try:
+    scaler, label_encoder, rf_clf, gb_reg, nn_model, dl_history = load_all_artifacts()
+except Exception as e:
+    st.error(f"Error initializing prediction models: {e}")
+    st.stop()
 
 CONDITION_EMOJIS = {
     'Sunny': '☀️',
@@ -137,8 +117,7 @@ with tab_live:
     
     col_input, col_btn = st.columns([4, 1])
     with col_input:
-        # Provide a non-empty label to avoid Streamlit accessibility warnings; hide it visually
-        city_name = st.text_input("City (hidden)", value="London", placeholder="Enter any city... (e.g. New York, Tokyo, Paris, Delhi, Sydney)", label_visibility='hidden')
+        city_name = st.text_input("City Search", value="London", label_visibility="collapsed", placeholder="Enter any city... (e.g. New York, Tokyo, Paris, Delhi, Sydney)")
     with col_btn:
         st.write("")
         btn_search = st.button("🔍 Get Forecast", use_container_width=True)

@@ -11,10 +11,10 @@ from weather_api import geocode_city, fetch_live_weather
 from model_trainer import train_and_save_models, PyTorchWeatherNN
 
 # -----------------------------------------------------------------------------
-# 1. Page Config & CSS Injection
+# 1. Page Config & SEO Meta Tag Injection
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="AI Weather Intelligence",
+    page_title="AI Weather Intelligence | Real-Time Global Forecast & Deep Learning",
     page_icon="🌤️",
     layout="wide",
     initial_sidebar_state="expanded"

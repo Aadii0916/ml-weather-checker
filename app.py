@@ -26,15 +26,6 @@ if os.path.exists(css_file):
     with open(css_file) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# Inject Background Cloud Layer
-st.markdown("""
-    <div class="cloud-bg-container">
-        <div class="cloud-shape cloud-shape-1"></div>
-        <div class="cloud-shape cloud-shape-2"></div>
-        <div class="cloud-shape cloud-shape-3"></div>
-    </div>
-""", unsafe_allow_html=True)
-
 # -----------------------------------------------------------------------------
 # 2. Resource Caching & Model Loading (with Auto Environment Compatibility)
 # -----------------------------------------------------------------------------
